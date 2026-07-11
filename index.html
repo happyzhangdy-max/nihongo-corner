@@ -7,6 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>日语角</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🎌%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Noto+Sans+JP:wght@300;400;500;700;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
@@ -525,7 +526,6 @@ html { overflow:hidden; }
 .skeleton-reading { width: 30%; height: 16px; }
 .skeleton-meaning { width: 70%; height: 16px; }
 .skeleton-note { width: 45%; }
-.skeleton-note { width: 45%; }
 @keyframes searchShimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 .search-memo-text { font-size:11px; color:#555; margin-top:8px; }
 .search-ai-badge { font-size:10px; background:rgba(168,85,247,0.12); color:#a78bfa; padding:2px 8px; border-radius:50%; font-weight:500; white-space:nowrap; }
@@ -697,7 +697,7 @@ html { overflow:hidden; }
 .rn { font-size:13px; color:#f5a623; flex:1; }
 .rd { font-size:11px; color:#888; margin-top:2px; }
 .riv { padding:3px 7px; border-radius:50%; background:rgba(83,52,131,0.3); color:#a78bfa; font-size:11px; }
-.toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(14px); background:var(--bg-surface-2); border:1px solid var(--border-subtle); border-radius:var(--radius-md); padding:8px 18px; font-size:var(--fs-small); opacity:0; transition:opacity 0.3s,transform 0.3s,background 0.3s,border-color 0.3s; pointer-events:none; z-index:999; box-shadow:var(--shadow-elevated); }
+.toast { position:fixed; bottom:calc(78px + env(safe-area-inset-bottom, 0px)); left:50%; transform:translateX(-50%) translateY(14px); background:var(--bg-surface-2); border:1px solid var(--border-subtle); border-radius:var(--radius-md); padding:8px 18px; font-size:var(--fs-small); opacity:0; transition:opacity 0.3s,transform 0.3s,background 0.3s,border-color 0.3s; pointer-events:none; z-index:999; box-shadow:var(--shadow-elevated); }
 .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 
 /* --- 新增：颜色标记按钮 --- */
@@ -1335,6 +1335,10 @@ html { overflow:hidden; }
       <span class="sub-icon">🗂️</span>
       <span class="sub-label">单词库</span>
     </div>
+    <div class="submenu-item" onclick="go('grammar');closeSubmenu()">
+      <span class="sub-icon">📖</span>
+      <span class="sub-label">背语法</span>
+    </div>
   </div>
 </div>
 
@@ -1434,8 +1438,8 @@ html { overflow:hidden; }
         <div class="game-wide-sub">爬塔答题 · 拳击对战</div>
       </div>
       <div class="game-wide-chips">
-        <span class="game-chip game-chip-challenge" onclick="showT('⚡ 今日挑战 — 即将上线，敬请期待')">⚡ 今日挑战</span>
-        <span class="game-chip game-chip-rank" onclick="showT('🏆 排行榜 — 即将上线，敬请期待')">🏆 排行榜</span>
+        <span class="game-chip game-chip-challenge" onclick="event.stopPropagation();showT('⚡ 今日挑战 — 即将上线，敬请期待')">⚡ 今日挑战</span>
+        <span class="game-chip game-chip-rank" onclick="event.stopPropagation();showT('🏆 排行榜 — 即将上线，敬请期待')">🏆 排行榜</span>
       </div>
       <div class="game-wide-arrow">→</div>
     </div>
@@ -1900,7 +1904,7 @@ html { overflow:hidden; }
   </div>
   <div class="ap-controls" style="margin-top:20px">
     <button class="btn bs" style="padding:8px 16px" onclick="gApTogglePause()">⏸ 暂停</button>
-    <button class="btn" style="padding:8px 16px;background:rgba(78,204,163,0.12);color:#4ecca3;border:1px solid rgba(78,204,163,0.25);font-size:13px" id="apDisplayToggle" onclick="cycleApDisplayMode()">隐藏汉字</button>
+    <button class="btn" style="padding:8px 16px;background:rgba(78,204,163,0.12);color:#4ecca3;border:1px solid rgba(78,204,163,0.25);font-size:13px" id="gApDisplayToggle" onclick="cycleApDisplayMode()">隐藏汉字</button>
     <button class="btn br" style="padding:8px 16px" onclick="gApStop()">⏹ 停止</button>
   </div>
   <button class="ap-nav ap-nav-left" onclick="gApPrev()">‹</button>
@@ -1971,7 +1975,7 @@ function go(e) {
   document.querySelectorAll(".bottombar__item").forEach(function(b) {
     b && b.classList.remove("bottombar__item--active");
   });
-  var sectionMap = { home:"home", vocab:"learn", autoplay:"learn",
+  var sectionMap = { home:"home", vocab:"learn", grammar:"learn", autoplay:"learn",
     review:"review", book:"review", wrong:"review",
     game:"practice", quiz:"practice", scan:"home",
     studyplan:"learn", settings:"settings" };
@@ -2006,16 +2010,16 @@ function go(e) {
 }
 </script>
 
-<script src="data.js?v=354"></script>
-<script src="grammar_data.js?v=354"></script>
-<script src="quiz_data_high.js?v=354"></script>
-<script src="quiz_data_normal.js?v=354"></script>
-<script src="inline.js?v=354"></script>
-<script src="game/tower-climb.js?v=354"></script>
+<script src="data.js?v=355"></script>
+<script src="grammar_data.js?v=355"></script>
+<script src="quiz_data_high.js?v=355"></script>
+<script src="quiz_data_normal.js?v=355"></script>
+<script src="inline.js?v=355"></script>
+<script src="game/tower-climb.js?v=355"></script>
 
 
 
-<script src="game/boxing.js?v=354"></script>
+<script src="game/boxing.js?v=355"></script>
 <script>
 // 搜索框 placeholder 随机轮播
 (function(){
@@ -2190,9 +2194,10 @@ function toggleHideKanji(){
 
 /* 自动播放：三态显示切换（隐藏汉字 → 隐藏汉字+释义 → 恢复全部显示） */
 function cycleApDisplayMode(){
-  var card=document.querySelector('#apScreen.show .ap-card')||document.querySelector('#gApScreen.show .ap-card');
+  var screen=document.querySelector('#apScreen.show')||document.querySelector('#gApScreen.show');
+  var card=screen&&screen.querySelector('.ap-card');
   if(!card)return;
-  var btn=document.getElementById('apDisplayToggle');
+  var btn=screen.querySelector('#apDisplayToggle,#gApDisplayToggle');
   var state=parseInt(card.dataset.displayState||'0');
   state=(state+1)%3;
   card.dataset.displayState=state;
@@ -2210,6 +2215,16 @@ function cycleApDisplayMode(){
 
 /* 去掉"浏览即已学习"：浏览单词墙不再自动记录SM-2 */
 saveViewedWords=function(){startVocabTimer()};
+
+/* 单词自动播放：第一个词按「‹」给出边界提示，与 apPrev/gApPrev 行为一致 */
+(function(){
+  var origVApPrev=window.vApPrev;
+  if(typeof origVApPrev!=='function')return;
+  window.vApPrev=function(){
+    if(typeof _vApIdx!=='undefined'&&_vApIdx<=0){showT('已经是第一个词了');return;}
+    origVApPrev();
+  };
+})();
 
 /* 拦截硬件返回键：游戏/非首页按返回时留站内导航，不退出 */
 (function(){
