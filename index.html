@@ -483,6 +483,7 @@ html { overflow:hidden; }
 .sl-n3 { background:rgba(245,158,11,0.2); color:#f59e0b; }
 .sl-n2 { background:rgba(239,68,68,0.2); color:#ef4444; }
 .sl-n1 { background:rgba(168,85,247,0.2); color:#a78bfa; }
+.sl-n1新 { background:rgba(236,72,153,0.2); color:#f472b6; }
 .search-result-tags { display:flex; gap:6px; flex-wrap:wrap; margin-top:4px; }
 .search-result-tag { font-size:9px; padding:1px 6px; border-radius:6px; color:#999; background:rgba(255,255,255,0.04); }
 .search-result-ai-row { border-left:3px solid #a855f7; }
@@ -1514,6 +1515,7 @@ html { overflow:hidden; }
         <button class="tab" onclick="setF('n3',this)">N3</button>
         <button class="tab active" onclick="setF('n2',this)">N2</button>
         <button class="tab" onclick="setF('n1',this)">N1</button>
+        <button class="tab" onclick="setF('n1新',this)">N1新</button>
       </div>
       <div class="st3" style="display:inline-flex;margin-left:6px">
         <button class="tab active" onclick="sortV('freq',this)">📊 高频↓</button>
@@ -1922,6 +1924,7 @@ html { overflow:hidden; }
         <button class="lvl-btn active" data-lvl="n3" onclick="togglePlanLvl(this)">N3</button>
         <button class="lvl-btn active" data-lvl="n2" onclick="togglePlanLvl(this)">N2</button>
         <button class="lvl-btn" data-lvl="n1" onclick="togglePlanLvl(this)">N1</button>
+        <button class="lvl-btn" data-lvl="n1新" onclick="togglePlanLvl(this)">N1新</button>
       </div>
     </div>
     <div style="margin-bottom:14px">
@@ -2007,10 +2010,11 @@ function go(e) {
 </script>
 
 <script src="data.js?v=354"></script>
+<script src="data_n1_new.js?v=1"></script>
 <script src="grammar_data.js?v=354"></script>
 <script src="quiz_data_high.js?v=354"></script>
 <script src="quiz_data_normal.js?v=354"></script>
-<script src="inline.js?v=354"></script>
+<script src="inline.js?v=355"></script>
 <script src="game/tower-climb.js?v=354"></script>
 
 
@@ -2050,22 +2054,66 @@ function go(e) {
   },6000);
 })();
 
+/* 自动播放：级别选择以界面状态为准，允许清空后再选 */
+_apToggleLvl = function(el, level){
+  var settings=JSON.parse(localStorage.getItem('ap_settings')||'{}');
+  var levels=Array.isArray(settings.levels)?settings.levels.slice():['n5','n4','n3'];
+  delete settings.todayWordIds;
+  var index=levels.indexOf(level);
+  if(index>=0)levels.splice(index,1);else levels.push(level);
+  settings.levels=levels;
+  localStorage.setItem('ap_settings',JSON.stringify(settings));
+  var active=levels.indexOf(level)>=0;
+  el.classList.toggle('ap-tag-on',active);
+  el.style.background=active?'linear-gradient(135deg,#e94560,#ff6b9d)':'rgba(255,255,255,0.06)';
+  el.style.color=active?'#fff':'#64748b';
+};
+
+/* 自动播放：把实际渲染的词条 ID 绑定到画面 */
+(function(){
+  function bindVocabId(screenId,item){
+    var screen=document.getElementById(screenId);
+    if(!screen)return;
+    if(item&&item.id!=null)screen.setAttribute('data-vocab-id',String(item.id));
+    else screen.removeAttribute('data-vocab-id');
+  }
+  var originalApShowCard=apShowCard;
+  apShowCard=function(){
+    var item=_apQueue&&_apQueue[_apIdx];
+    originalApShowCard();
+    bindVocabId('apScreen',item);
+  };
+  var originalVApShowCard=vApShowCard;
+  vApShowCard=function(){
+    var item=_vApQueue&&_vApQueue[_vApIdx];
+    originalVApShowCard();
+    bindVocabId('gApScreen',item);
+  };
+})();
+
 /* 自动播放：默认按高频排序 */
 (function(){
+  function frequencyScore(item){
+    return item && item.frequency_rank != null ? item.frequency_rank : (item && item.appear || 0);
+  }
   var origStart = startAutoPlay;
   startAutoPlay = function(){
     origStart();
-    if(_apQueue&&_apQueue.length>1) _apQueue.sort(function(a,b){return (b.appear||0)-(a.appear||0)});
+    if(_apQueue&&_apQueue.length>1) _apQueue.sort(function(a,b){return frequencyScore(b)-frequencyScore(a)});
   };
   var origVStart = startVocabAutoPlay;
   startVocabAutoPlay = function(){
     origVStart();
-    if(_vApQueue&&_vApQueue.length>1) _vApQueue.sort(function(a,b){return (b.appear||0)-(a.appear||0)});
+    if(_vApActive&&_vApQueue&&_vApQueue.length>1){
+      _vApQueue.sort(function(a,b){return frequencyScore(b)-frequencyScore(a)});
+      _vApIdx=0;
+      vApShowCard();
+    }
   };
   var origGStart = startGAutoPlay;
   startGAutoPlay = function(){
     origGStart();
-    if(_gApQueue&&_gApQueue.length>1) _gApQueue.sort(function(a,b){return (b.appear||0)-(a.appear||0)});
+    if(_gApQueue&&_gApQueue.length>1) _gApQueue.sort(function(a,b){return frequencyScore(b)-frequencyScore(a)});
   };
 })();
 
@@ -2084,12 +2132,18 @@ function go(e) {
     var newFreq=card.querySelector('.ap-freq');
     if(!newFreq)return;
     if(freqElem!==newFreq)freqElem=newFreq;
-    // 只在频次变化时更新
-    var lastWord=freqElem.getAttribute('data-word');
-    if(lastWord===wordText)return;
-    freqElem.setAttribute('data-word',wordText);
-    var w=VOCAB_DATA.find(function(v){return v.word===wordText||v.reading===wordText});
-    if(w&&w.appear){
+    var w=null;
+    var isVocabScreen=screen.id==='apScreen'||(screen.id==='gApScreen'&&typeof _vApActive!=='undefined'&&_vApActive);
+    var itemId=parseInt(screen.getAttribute('data-vocab-id'),10);
+    if(isVocabScreen&&!isNaN(itemId)){
+      w=VOCAB_DATA.find(function(v){return v.id===itemId});
+    }
+    var itemKey=wordText+':'+(w&&w.id!=null?w.id:'');
+    if(freqElem.getAttribute('data-item')===itemKey)return;
+    freqElem.setAttribute('data-item',itemKey);
+    if(w&&w.frequency_tier){
+      freqElem.textContent=w.frequency_label||w.frequency_tier;
+    }else if(w&&w.appear){
       var a=w.appear;
       var label=a>=7?'🔥 高频':a>=5?'⚡ 较高频':a>=4?'📗 中频':'📘 低频';
       freqElem.textContent=label+' · 频次 '+a;
