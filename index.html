@@ -1279,6 +1279,12 @@ html { overflow:hidden; }
   text-shadow: 0 0 8px rgba(245,158,11,0.5);
 }
 
+
+.scan-error{margin:12px 0;padding:12px 16px;border:1px solid #e94560;border-radius:12px;color:var(--text-primary);background:rgba(233,69,96,.08);line-height:1.7}
+.scan-history-item{display:block;width:100%;text-align:left;padding:10px 14px;margin-bottom:6px;cursor:pointer;color:var(--text-primary);font:inherit}
+.scan-history-time{font-size:11px;color:var(--text-tertiary);margin-bottom:4px}
+.scan-history-preview{font-size:13px;line-height:1.7;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+#scanAnalysisContent{font-size:14px;line-height:1.9;color:var(--text-primary)}
 </style>
 </head>
 <body>
@@ -1714,6 +1720,7 @@ html { overflow:hidden; }
     <div class="scan-header-title">识图翻译</div>
     <div class="scan-header-sub">拍照或选择图片 → 自动识别日文 → 翻译成中文</div>
   </div>
+  <div id="scanError" class="scan-error" role="alert" style="display:none"></div>
   <!-- 无图片时显示上传区 -->
   <div id="scanEmpty">
     <div class="scan-upload-area" id="scanUploadArea">
@@ -1728,7 +1735,7 @@ html { overflow:hidden; }
   <!-- 有图片时显示预览区 -->
   <div id="scanPreview" style="display:none">
     <div class="scan-img-wrap">
-      <img id="scanImage" class="scan-img" alt="试卷预览">
+      <img id="scanImage" class="scan-img" alt="待识别图片预览">
       <button class="scan-img-clear" onclick="clearScanImage()">✕</button>
     </div>
     <div class="scan-actions">
@@ -1742,7 +1749,8 @@ html { overflow:hidden; }
   <div id="scanLoading" style="display:none">
     <div class="scan-loading">
       <div class="scan-loading-spinner"></div>
-      <div class="scan-loading-text" id="scanLoadingText">正在识别图片中的日文...</div>
+      <div class="scan-loading-text" id="scanLoadingText" role="status" aria-live="polite">正在识别图片中的日文...</div>
+      <button class="scan-btn" onclick="clearScanImage()">取消识别</button>
     </div>
   </div>
   <!-- 结果区 -->
@@ -2010,7 +2018,9 @@ function go(e) {
 <script src="grammar_data.js?v=354"></script>
 <script src="quiz_data_high.js?v=354"></script>
 <script src="quiz_data_normal.js?v=354"></script>
-<script src="inline.js?v=354"></script>
+<script src="ai-client.js?v=355"></script>
+<script src="scan.js?v=355"></script>
+<script src="inline.js?v=355"></script>
 <script src="game/tower-climb.js?v=354"></script>
 
 
@@ -2630,36 +2640,6 @@ function updateBookAiFilterBtn(){
     if (queue.length > 1) queue.sort(function(a, b){ return (b.appear || 0) - (a.appear || 0); });
     startApQueue(queue, settings);
   };
-})();
-/* ── Scan history clickable (unconditional) ── */
-(function(){
-  if (typeof renderScanHistory !== 'function' || typeof window._overrodeRenderScanHistory !== 'undefined') return;
-  window._overrodeRenderScanHistory = true;
-  var _orig = renderScanHistory;
-  renderScanHistory = function() {
-    _orig();
-    var list = document.getElementById('scanHistoryList');
-    if (!list) return;
-    var cards = list.querySelectorAll('.plan-card');
-    cards.forEach(function(card, idx) {
-      card.style.cursor = 'pointer';
-      card.onclick = function() {
-        var rec = _scanHistory[idx];
-        if (!rec) return;
-        document.getElementById('scanPreview').style.display = 'none';
-        document.getElementById('scanLoading').style.display = 'none';
-        document.getElementById('scanResult').style.display = 'block';
-        document.getElementById('scanFullJp').textContent = rec.jp || '';
-        document.getElementById('scanFullCn').textContent = rec.cn || '';
-        document.getElementById('scanAnalysisContent').style.display = 'block';
-        document.getElementById('scanAnalysisLoading').style.display = 'none';
-        document.getElementById('scanAnalysisContent').innerHTML = '<div style="color:#d1d5db;font-size:13px;line-height:1.9;white-space:pre-wrap">' + escHtml(rec.jp || '') + '</div>';
-        var tabs = document.querySelectorAll('.scan-result-tab');
-        if (tabs[0] && typeof switchScanView === 'function') switchScanView('parallel', tabs[0]);
-      };
-    });
-  };
-  if (_scanHistory && _scanHistory.length) setTimeout(renderScanHistory, 100);
 })();
 </script>
 <script>
