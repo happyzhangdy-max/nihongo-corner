@@ -6,13 +6,14 @@ const {createPlayer} = require('../scene-audio.js');
 const {normalize, candidates} = require('../autoplay-setup.js');
 const {loadContent} = require('../scripts/audit-content.cjs');
 
-test('every scene contains six complete task dialogues, with stable IDs and source context', () => {
+test('every scene contains twelve complete task dialogues, with stable IDs and source context', () => {
   assert.equal(data.authorship, 'original');
   assert.equal(data.scenes.length, 24);
   const ids = [], sentences = [];
   for (const scene of data.scenes) {
-    assert.equal(scene.dialogues.length, 6, scene.id);
+    assert.equal(scene.dialogues.length, 12, scene.id);
     assert.ok(scene.references.length);
+    assert.equal(new Set(scene.dialogues.map(d => d.task)).size, scene.dialogues.length, scene.id + ": distinct tasks");
     for (const ref of scene.references) assert.ok(data.sources.some(s => s.id === ref.sourceId && new URL(s.url).protocol === 'https:'));
     for (const [i, d] of scene.dialogues.entries()) {
       assert.equal(d.id, scene.id + '-' + String(i + 1).padStart(2, '0'));
@@ -28,17 +29,17 @@ test('every scene contains six complete task dialogues, with stable IDs and sour
       ids.push(d.id);
     }
   }
-  assert.equal(new Set(ids).size, 144);
-  assert.equal(sentences.length, 288);
+  assert.equal(new Set(ids).size, 288);
+  assert.equal(sentences.length, 576);
   assert.equal(new Set(sentences).size, sentences.length);
 });
 
 test('scene and task queues cannot include another scene, vocabulary selections or progress IDs', () => {
   for (const scene of data.scenes) {
     const queue = makeQueue(scene.id);
-    assert.equal(queue.length, 12);
+    assert.equal(queue.length, 24);
     assert.ok(queue.every(item => item.sceneId === scene.id && typeof item.id === 'string'));
-    assert.equal(makeQueue(scene.id, null, false).length, 6);
+    assert.equal(makeQueue(scene.id, null, false).length, 12);
     for (const d of scene.dialogues) {
       assert.deepEqual(makeQueue(scene.id, d.id).map(item => item.jp), [d.jp, d.reply.jp]);
       assert.deepEqual(makeQueue(scene.id, d.id, false).map(item => item.jp), [d.jp]);

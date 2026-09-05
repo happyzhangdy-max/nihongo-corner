@@ -22,10 +22,8 @@
 .scene-directory-grid span { font-size: 13px; color: var(--study-accent); }
 .scene-study .scene-text-button { padding-left: 0; border-color: transparent; background: transparent; color: var(--study-accent); }
 .scene-scope { color: var(--text-tertiary); font-size: 13px; margin-bottom: 14px; }
-.scene-task-select { display: none; }
-.scene-task-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
-.scene-task-tabs button { font-size: 14px; }
-.scene-task-tabs button[aria-pressed=true] { border-color: var(--study-accent); color: #d0f7df; background: #294234; }
+.scene-task-select { display: grid; gap: 8px; max-width: 620px; color: var(--text-secondary); font-size: 14px; }
+.scene-task-select select { width: 100%; min-width: 0; font-size: 14px; }
 .scene-options { border-bottom: 1px solid var(--border-subtle); padding: 18px 0; margin-bottom: 24px; color: var(--text-secondary); font-size: 14px; }
 .scene-study summary { cursor: pointer; min-height: 44px; align-content: center; }
 .scene-options > div { display: flex; flex-wrap: wrap; gap: 18px 24px; padding: 8px 0; }
@@ -77,9 +75,6 @@
   .scene-heading > p:last-child { font-size: 14px; margin: 6px 0; }
   .scene-scope { margin: 0 0 12px; }
   .scene-options { padding: 8px 0; margin-bottom: 16px; }
-  .scene-task-tabs { display: none; }
-  .scene-task-select { display: grid; gap: 8px; color: var(--text-secondary); font-size: 14px; }
-  .scene-task-select select { width: 100%; max-width: 100%; font-size: 14px; }
   .scene-directory-grid { grid-template-columns: 1fr; }
   .scene-directory-grid > button { padding: 20px; }
   .scene-dialogue { padding: 20px 18px; border-radius: 18px; }
