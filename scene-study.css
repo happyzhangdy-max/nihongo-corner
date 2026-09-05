@@ -1,0 +1,95 @@
+/* Task-led sentence practice, isolated from vocabulary card layouts. */
+#p-scenes.active { display: block; position: fixed; top: 52px; bottom: 62px; left: 0; width: 100%; max-width: none; padding: 0; overflow-y: auto; z-index: 10; background: var(--bg-primary); }
+.scene-study { max-width: 1040px; margin: 0 auto; padding: 32px 24px 210px; }
+.scene-heading { margin: 20px 0 28px; }
+.scene-heading h1 { font-size: clamp(30px, 4vw, 48px); line-height: 1.25; letter-spacing: -.035em; margin: 8px 0 12px; }
+.scene-heading > p:last-child { color: var(--text-secondary); font-size: 17px; }
+.scene-study button, .study-scene-entry { cursor: pointer; }
+.scene-study button, .scene-study input, .scene-study select { min-height: 44px; border-radius: 12px; border: 1px solid #ffffff24; background: var(--bg-surface-2); color: var(--text-primary); padding: 10px 14px; }
+.scene-study button:disabled { cursor: not-allowed; }
+.scene-study input[type=checkbox] { min-height: auto; width: 18px; height: 18px; accent-color: var(--study-accent); }
+.scene-study input[type=search] { display: block; width: 100%; margin-top: 8px; font-size: 16px; }
+.scene-directory-search { max-width: 620px; margin-bottom: 32px; }
+#sceneDirectoryResults { font-size: 13px; color: var(--text-tertiary); margin-top: 10px; }
+.scene-directory-group { margin: 30px 0; }
+.scene-directory-group h2 { font-size: 16px; color: var(--text-secondary); margin-bottom: 12px; }
+.scene-directory-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.scene-directory-grid > button { padding: 22px; text-align: left; background: var(--bg-surface); transition: background .16s, border-color .16s; }
+.scene-directory-grid > button:hover { border-color: #b8ecd080; background: #22312a; }
+.scene-directory-grid strong { display: block; font-size: 20px; }
+.scene-directory-grid small { display: block; color: var(--text-tertiary); margin-top: 4px; }
+.scene-directory-grid p { color: var(--text-secondary); font-size: 14px; margin: 14px 0; }
+.scene-directory-grid span { font-size: 13px; color: var(--study-accent); }
+.scene-study .scene-text-button { padding-left: 0; border-color: transparent; background: transparent; color: var(--study-accent); }
+.scene-scope { color: var(--text-tertiary); font-size: 13px; margin-bottom: 14px; }
+.scene-task-select { display: none; }
+.scene-task-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+.scene-task-tabs button { font-size: 14px; }
+.scene-task-tabs button[aria-pressed=true] { border-color: var(--study-accent); color: #d0f7df; background: #294234; }
+.scene-options { border-bottom: 1px solid var(--border-subtle); padding: 18px 0; margin-bottom: 24px; color: var(--text-secondary); font-size: 14px; }
+.scene-study summary { cursor: pointer; min-height: 44px; align-content: center; }
+.scene-options > div { display: flex; flex-wrap: wrap; gap: 18px 24px; padding: 8px 0; }
+.scene-options label { display: flex; align-items: center; gap: 8px; }
+.scene-dialogues { display: grid; gap: 20px; }
+.scene-dialogue { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 22px; padding: 26px; scroll-margin-top: 80px; }
+.scene-dialogue-heading { display: flex; gap: 12px; align-items: baseline; }
+.scene-dialogue-heading span { color: var(--text-tertiary); font-variant-numeric: tabular-nums; font-size: 13px; }
+.scene-dialogue-heading h2 { font-size: 20px; margin: 0; }
+.scene-situation { color: var(--text-tertiary); font-size: 13px; margin: 8px 0 18px; }
+.scene-turn { border-left: 3px solid transparent; border-radius: 0 12px 12px 0; padding: 12px 16px; margin-left: -16px; transition: background .16s, border-color .16s; }
+.scene-turn.is-speaking { border-color: var(--study-accent); background: #b8ecd00d; }
+.scene-role { color: var(--study-accent); font-size: 12px; margin: 0 0 8px; }
+.scene-jp { font-family: var(--font-jp); font-size: clamp(21px, 2.4vw, 28px); font-weight: 550; line-height: 1.75; margin: 0; overflow-wrap: anywhere; }
+.scene-reading { font-family: var(--font-jp); font-size: 14px; line-height: 1.9; color: var(--text-tertiary); margin: 8px 0; overflow-wrap: anywhere; }
+.scene-translation { color: var(--text-secondary); margin: 10px 0; font-size: 15px; }
+.scene-study .scene-listen { color: var(--study-accent); border: 0; background: transparent; padding-left: 0; font-size: 14px; }
+.scene-reply { margin-top: 10px; border-top: 1px solid var(--border-subtle); font-size: 14px; color: var(--text-secondary); }
+.scene-reply .scene-jp { font-size: clamp(19px, 2.2vw, 24px); color: var(--text-primary); }
+.scene-card-actions { display: flex; align-items: start; gap: 18px; border-top: 1px solid var(--border-subtle); padding-top: 14px; margin-top: 12px; font-size: 13px; }
+.scene-card-actions > button { flex-shrink: 0; }
+.scene-card-actions details { min-width: 0; color: var(--text-secondary); }
+.scene-card-actions dl { margin: 10px 0; }
+.scene-card-actions dl > div { margin-bottom: 10px; }
+.scene-card-actions dt { font-size: 15px; color: var(--text-primary); }
+.scene-card-actions dt small { display: block; font-size: 12px; color: var(--text-tertiary); }
+.scene-card-actions dd { margin: 0; }
+.scene-references { margin-top: 28px; color: var(--text-tertiary); font-size: 13px; }
+.scene-references li { margin: 10px 0 10px 20px; }
+.scene-references a { color: var(--study-accent); text-decoration: underline; text-underline-offset: 3px; }
+.scene-references li span { display: block; }
+.scene-player { position: fixed; z-index: 80; bottom: calc(76px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); width: min(940px, calc(100% - 40px)); padding: 16px 20px; border: 1px solid #b8ecd040; border-radius: 18px; background: #1a2521f7; box-shadow: 0 8px 32px #0008; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; backdrop-filter: blur(16px); }
+.scene-player-meta { display: grid; font-size: 14px; gap: 2px; }
+.scene-player-meta small { font-size: 11px; color: var(--text-tertiary); }
+.scene-player-buttons { display: flex; gap: 6px; }
+.scene-player button { font-size: 13px; min-width: 58px; padding: 8px 12px; }
+.scene-study .scene-primary { background: var(--study-accent); color: #10251b; font-weight: 650; min-width: 110px; }
+#sceneAudioError { width: 100%; color: #ffd5a9; font-size: 13px; margin: 0; }
+.study-scene-entry { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 20px; border: 1px solid #b8ecd048; background: #21382b; color: var(--text-primary); border-radius: 20px; padding: 22px 26px; text-align: left; margin: 0 0 24px; }
+.study-scene-entry small { color: var(--study-accent); font-size: 12px; }
+.study-scene-entry strong { display: block; font-size: 24px; margin: 3px 0 5px; }
+.study-scene-entry span > span { font-size: 14px; color: var(--text-secondary); }
+.study-scene-entry b { font-size: 24px; color: var(--study-accent); }
+@media (max-width: 600px) {
+  .scene-study { padding: 16px 16px 235px; }
+  .scene-heading { margin: 8px 0 16px; }
+  .scene-heading .study-eyebrow { display: none; }
+  .scene-heading h1 { margin: 4px 0 8px; }
+  .scene-heading > p:last-child { font-size: 14px; margin: 6px 0; }
+  .scene-scope { margin: 0 0 12px; }
+  .scene-options { padding: 8px 0; margin-bottom: 16px; }
+  .scene-task-tabs { display: none; }
+  .scene-task-select { display: grid; gap: 8px; color: var(--text-secondary); font-size: 14px; }
+  .scene-task-select select { width: 100%; max-width: 100%; font-size: 14px; }
+  .scene-directory-grid { grid-template-columns: 1fr; }
+  .scene-directory-grid > button { padding: 20px; }
+  .scene-dialogue { padding: 20px 18px; border-radius: 18px; }
+  .scene-card-actions { flex-wrap: wrap; gap: 8px 18px; }
+  .scene-player { bottom: calc(72px + env(safe-area-inset-bottom)); padding: 12px; width: calc(100% - 24px); gap: 8px; }
+  .scene-player-meta { width: 100%; }
+  .scene-player-meta small { display: none; }
+  .scene-player-buttons { width: 100%; }
+  .scene-player-buttons button { padding: 8px; min-width: 0; flex: 1; }
+  .scene-player-buttons .scene-primary { flex: 1.7; min-width: 0; }
+  .study-scene-entry { padding: 20px; }
+}
+@media (prefers-reduced-motion: reduce) { .scene-study * { transition: none !important; scroll-behavior: auto !important; } }
