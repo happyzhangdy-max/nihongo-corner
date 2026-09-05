@@ -1,9 +1,10 @@
 /* Autoplay setup owns settings, source selection and queue creation. */
 (function (root) {
   'use strict';
+  const catalog = typeof module !== 'undefined' && module.exports ? require('./vocabulary-catalog.js') : root.VocabularyCatalog;
   const LEVELS = ['n5', 'n4', 'n3', 'n2', 'n1'];
   const SPECIAL = ['N2听力', 'N2阅读', '拟声拟态', '外来语', '易混汉字词'];
-  const SOURCES = [['level', '按等级', '选择学习范围'], ['theme', '按主题', '场景与专项'], ['book', '生词本', '复习已收藏的词'], ['all', '全部词库', '自由练习']];
+  const SOURCES = [['level', '按等级', '选择学习范围'], ['theme', '按主题', '场景 · 主题 · 专项'], ['book', '生词本', '复习已收藏的词'], ['all', '全部词库', '自由练习']];
   const list = (value, fallback) => Array.isArray(value) ? value.filter(v => typeof v === 'string') : fallback;
 
   function normalize(value) {
@@ -19,6 +20,10 @@
       const lvl = raw.lvlOn !== false;
       settings.source = raw.bookOn ? 'book' : raw.customOn || (lvl && raw.catOn) ? 'mixed' : raw.catOn ? 'theme' : lvl ? 'level' : 'all';
     }
+    // Preserve the old empty-filter meaning once; explicit new empty selections stay empty.
+    if (raw.categoryVersion !== 1 && !settings.categories.length && (settings.source === 'theme' || settings.source === 'mixed' && raw.catOn)) settings.categories = ['legacy:all'];
+    settings.categoryVersion = 1;
+    settings.catalogKind = ['scene', 'topic', 'special'].includes(raw.catalogKind) ? raw.catalogKind : 'scene';
     return settings;
   }
 
@@ -39,7 +44,7 @@
     if (s.source === 'book') return bookWords(vocab, book);
     return vocab.filter(v => {
       const lvl = s.levels.includes(v.level);
-      const cat = !s.categories.length || s.categories.includes(v.category);
+      const cat = s.categories.some(id => catalog.matches(v, id));
       if (s.source === 'level') return lvl;
       if (s.source === 'theme') return cat;
       if (s.source === 'all') return true;
@@ -85,14 +90,7 @@
     return '<div class="study-choices">' + items.map(([value, label]) => '<button type="button" data-key="' + key + '" data-value="' + escape(value) + '" aria-pressed="' + (Array.isArray(selected) ? selected.includes(value) : selected === value) + '">' + escape(label) + '</button>').join('') + '</div>';
   }
   function levels(s) { return choices('levels', LEVELS.map(v => [v, v.toUpperCase()]), s.levels); }
-  function categories(s) {
-    const counts = new Map();
-    VOCAB.forEach(v => { if (v.category) counts.set(v.category, (counts.get(v.category) || 0) + 1); });
-    const names = [...counts.keys()].sort((a, b) => SPECIAL.includes(b) - SPECIAL.includes(a) || a.localeCompare(b, 'zh'));
-    return '<label class="study-search-label" for="studyCategorySearch">查找主题</label><input id="studyCategorySearch" class="study-search" type="search" placeholder="例如：旅行、N2听力、外来语" autocomplete="off">' +
-      '<div class="study-category-summary"><span id="studySelectedCategories">' + (s.categories.length ? '已选 ' + s.categories.length + ' 个主题' : '全部主题') + '</span><button type="button" data-action="clear-categories">全部主题</button></div>' +
-      '<div class="study-category-list" aria-label="主题多选">' + names.map(name => '<button type="button" data-key="categories" data-value="' + escape(name) + '" aria-pressed="' + s.categories.includes(name) + '"><span>' + escape(name) + '</span><small>' + counts.get(name) + ' 词</small></button>').join('') + '</div><p class="study-note" id="studyNoCategories" hidden>没有匹配的主题，请换个关键词。</p>';
-  }
+  function categories() { return '<div id="studyCatalog"></div>'; }
   function render() {
     const page = document.getElementById('p-autoplay');
     if (!page || !page.classList.contains('active')) return;
@@ -116,13 +114,12 @@
       settings[event.target.dataset.flag] = event.target.checked;
       save(settings); render();
     };
-    page.oninput = event => {
-      if (event.target.id !== 'studyCategorySearch') return;
-      const q = event.target.value.trim().toLowerCase();
-      let visible = 0;
-      page.querySelectorAll('[data-key="categories"]').forEach(button => { button.hidden = !button.dataset.value.toLowerCase().includes(q); if (!button.hidden) visible++; });
-      page.querySelector('#studyNoCategories').hidden = visible > 0;
-    };
+    const picker = page.querySelector('#studyCatalog');
+    if (picker) root.CatalogPicker.mount(picker, {
+      vocab: VOCAB, selected: s.categories, kind: s.catalogKind,
+      onChange: categories => { const settings = read(); settings.categories = categories; settings.categoryVersion = 1; save(settings); updateSummary(settings); },
+      onKindChange: kind => { const settings = read(); settings.catalogKind = kind; save(settings); }
+    });
     updateSummary(s);
   }
   function updateSummary(s) {
@@ -132,12 +129,12 @@
     page.querySelector('#studyTotal').textContent = count;
     page.querySelector('#studyMobileCount').textContent = count + ' 词';
     page.querySelector('#studyAvailable').textContent = '当前范围共 ' + available.toLocaleString('zh-CN') + ' 词' + (s.count > available && available ? '，本轮全部学习' : '，随机抽取');
-    const name = SOURCES.find(([key]) => key === s.source)?.[1] || '组合筛选';
+    const name = s.source === 'theme' && s.categories.length ? s.categories.map(catalog.label).join('、') : SOURCES.find(([key]) => key === s.source)?.[1] || '组合筛选';
     page.querySelector('#studyReadyDescription').textContent = name + ' · ' + (s.format === 'word_sent' ? '单词与例句 / 搭配' : '只听单词');
     page.querySelector('#studyStart').disabled = !count;
     const empty = page.querySelector('#studyEmpty');
     empty.hidden = !!count;
-    empty.textContent = s.source === 'book' ? '还没有可播放的收藏。先去词库或搜索中收藏几个词吧。' : '当前组合没有词汇，请选择等级或调整主题。';
+    empty.textContent = s.source === 'book' ? '还没有可播放的收藏。先去词库或搜索中收藏几个词吧。' : '请选择场景、主题或等级；多个分类会合并词汇，相同条目只播放一次。';
     page.querySelector('#studyStatus').textContent = '已选择 ' + count + ' 词，共有 ' + available + ' 词可选。';
   }
   function onClick(event) {
@@ -147,16 +144,11 @@
     if (action === 'start') return root.startVocabAutoPlay({ manual: true });
     if (action === 'book') return go('book');
     const s = read();
-    if (action === 'clear-categories') {
-      s.categories = []; save(s);
-      document.querySelectorAll('#p-autoplay [data-key="categories"]').forEach(b => b.setAttribute('aria-pressed', 'false'));
-      document.getElementById('studySelectedCategories').textContent = '全部主题'; updateSummary(s); return;
-    }
     const key = button.dataset.key;
     if (!key) return;
     let value = button.dataset.value;
     if (key === 'count' || key === 'speed') value = Number(value);
-    if (['levels', 'categories', 'customCategories'].includes(key)) {
+    if (['levels', 'customCategories'].includes(key)) {
       let selected = s[key];
       if (key === 'customCategories' && !selected.length) selected = SPECIAL.slice();
       s[key] = selected.includes(value) ? selected.filter(v => v !== value) : [...selected, value];
@@ -173,7 +165,6 @@
       const v = key === 'count' || key === 'speed' ? Number(b.dataset.value) : b.dataset.value;
       b.setAttribute('aria-pressed', Array.isArray(s[key]) ? s[key].includes(v) : s[key] === v);
     });
-    if (key === 'categories') document.getElementById('studySelectedCategories').textContent = s.categories.length ? '已选 ' + s.categories.length + ' 个主题' : '全部主题';
     if (key === 'speed') document.getElementById('studySpeedSummary').textContent = s.speed + ' 秒';
     updateSummary(s);
   }
