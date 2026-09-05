@@ -4,7 +4,7 @@ const vm = require('node:vm');
 
 function loadContent() {
   const context = vm.createContext({});
-  for (const name of ['data.js', 'grammar_data.js']) {
+  for (const name of ['data.js', 'scene-vocab.js', 'grammar_data.js']) {
     vm.runInContext(fs.readFileSync(path.join(__dirname, '..', name), 'utf8'), context);
   }
   return vm.runInContext('({ vocab: VOCAB_DATA, grammar: GRAMMAR_DATA })', context);
