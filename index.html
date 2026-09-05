@@ -1287,6 +1287,7 @@ html { overflow:hidden; }
 #scanAnalysisContent{font-size:14px;line-height:1.9;color:var(--text-primary)}
 </style>
 <link rel="stylesheet" href="ui.css?v=357">
+<link rel="stylesheet" href="scene-study.css?v=358">
 </head>
 <body>
 <div class="ambient-glow">
@@ -1710,6 +1711,7 @@ html { overflow:hidden; }
 
 <!-- ===== 自动播放 ===== -->
 <div class="page" id="p-autoplay"></div>
+<div class="page" id="p-scenes"></div>
 
 <!-- ===== 扫描识图 ===== -->
 <div class="page" id="p-scan">
@@ -1946,6 +1948,7 @@ html { overflow:hidden; }
 <script>
 /* ── go() 核心导航函数（必须 inline，不依赖外部 JS） ── */
 function go(e) {
+  if (window.SceneStudy) SceneStudy.stop();
   closeD();
   closePlanModal();
   if (_vApActive) {
@@ -1977,7 +1980,7 @@ function go(e) {
   document.querySelectorAll(".bottombar__item").forEach(function(b) {
     b && b.classList.remove("bottombar__item--active");
   });
-  var sectionMap = { home:"home", vocab:"learn", autoplay:"learn",
+  var sectionMap = { home:"home", vocab:"learn", autoplay:"learn", scenes:"learn",
     review:"review", book:"review", wrong:"review",
     game:"practice", quiz:"practice", scan:"home",
     studyplan:"learn", settings:"settings" };
@@ -1985,7 +1988,7 @@ function go(e) {
   var navBtn = document.querySelector('.bottombar__item[data-section="' + sec + '"]');
   navBtn && navBtn.classList.add("bottombar__item--active");
   var titles = { home:"", vocab:"单词库", grammar:"背语法", review:"待复习",
-    book:"生词本", quiz:"模拟题", wrong:"错题本", autoplay:"自动背单词",
+    book:"生词本", quiz:"模拟题", wrong:"错题本", autoplay:"自动学习", scenes:"场景句子",
     game:"单词大冒险", scan:"拍照识图", studyplan:"学习计划", settings:"" };
   var titleEl = document.getElementById("topbarTitle");
   titleEl && (titleEl.textContent = titles[e] || "", titleEl.classList.toggle("show", !!titles[e]));
@@ -2006,6 +2009,7 @@ function go(e) {
   if (e === "book") renderBook();
   if (e === "wrong") renderWrong();
   if (e === "autoplay") renderAutoPlayOptions();
+  if (e === "scenes" && window.SceneStudy) SceneStudy.render();
   if (e === "scan") loadScanHistory();
   if (e === "studyplan") renderStudyPlan();
   injectPlanStrip(e);
@@ -2015,14 +2019,17 @@ function go(e) {
 <script src="data.js?v=356"></script>
 <script src="scene-vocab.js?v=357"></script>
 <script src="vocabulary-catalog.js?v=357"></script>
-<script src="catalog-picker.js?v=357"></script>
+<script src="catalog-picker.js?v=358"></script>
 <script src="grammar_data.js?v=356"></script>
 <script src="quiz_data_high.js?v=354"></script>
 <script src="quiz_data_normal.js?v=354"></script>
 <script src="ai-client.js?v=355"></script>
 <script src="scan.js?v=355"></script>
-<script src="autoplay-setup.js?v=357"></script>
-<script src="inline.js?v=357"></script>
+<script src="scene-lessons.js?v=358"></script>
+<script src="scene-audio.js?v=358"></script>
+<script src="scene-study.js?v=358"></script>
+<script src="autoplay-setup.js?v=358"></script>
+<script src="inline.js?v=358"></script>
 <script src="game/tower-climb.js?v=354"></script>
 
 

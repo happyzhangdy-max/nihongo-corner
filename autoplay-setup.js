@@ -4,7 +4,7 @@
   const catalog = typeof module !== 'undefined' && module.exports ? require('./vocabulary-catalog.js') : root.VocabularyCatalog;
   const LEVELS = ['n5', 'n4', 'n3', 'n2', 'n1'];
   const SPECIAL = ['N2听力', 'N2阅读', '拟声拟态', '外来语', '易混汉字词'];
-  const SOURCES = [['level', '按等级', '选择学习范围'], ['theme', '按主题', '场景 · 主题 · 专项'], ['book', '生词本', '复习已收藏的词'], ['all', '全部词库', '自由练习']];
+  const SOURCES = [['level', '按等级', '选择学习范围'], ['theme', '按主题', '主题词库 · 语言专项'], ['book', '生词本', '复习已收藏的词'], ['all', '全部词库', '自由练习']];
   const list = (value, fallback) => Array.isArray(value) ? value.filter(v => typeof v === 'string') : fallback;
 
   function normalize(value) {
@@ -12,6 +12,7 @@
     const settings = { ...raw };
     settings.levels = list(raw.levels, ['n5', 'n4', 'n3']).filter(v => LEVELS.includes(v));
     settings.categories = list(raw.categories, []);
+    if (settings.categories.length > 1) settings.categories = settings.categories.filter(id => id !== 'legacy:all');
     settings.customCategories = list(raw.customCategories, []);
     settings.speed = [0, 0.5, 1, 2, 3].includes(raw.speed) ? raw.speed : 1;
     settings.count = [0, 10, 20, 50, 100].includes(raw.count) ? raw.count : 20;
@@ -23,7 +24,7 @@
     // Preserve the old empty-filter meaning once; explicit new empty selections stay empty.
     if (raw.categoryVersion !== 1 && !settings.categories.length && (settings.source === 'theme' || settings.source === 'mixed' && raw.catOn)) settings.categories = ['legacy:all'];
     settings.categoryVersion = 1;
-    settings.catalogKind = ['scene', 'topic', 'special'].includes(raw.catalogKind) ? raw.catalogKind : 'scene';
+    settings.catalogKind = ['topic', 'special'].includes(raw.catalogKind) ? raw.catalogKind : 'topic';
     return settings;
   }
 
@@ -95,16 +96,24 @@
     const page = document.getElementById('p-autoplay');
     if (!page || !page.classList.contains('active')) return;
     const s = read();
+    if (s.source === 'theme' || s.source === 'mixed' && s.catOn) {
+      const oldScene = catalog.scenes.find(scene => s.categories.includes(scene.id) || s.categories.includes(scene.label));
+      if (oldScene && root.SceneStudy) {
+        s.categories = s.categories.filter(id => id !== 'legacy:all' && !catalog.scenes.some(scene => scene.id === id || scene.label === id));
+        save(s);
+        return root.SceneStudy.open(oldScene.id.slice(6));
+      }
+    }
     const mixed = s.source === 'mixed';
-    page.innerHTML = '<div class="study-setup"><header class="study-heading"><p class="study-eyebrow">每天一点，慢慢记住</p><h1>自动背单词</h1><p>选好今天的内容，按自己的节奏听与记。</p></header>' +
-      '<div class="study-layout"><div class="study-main"><section class="study-panel" aria-labelledby="studyContentTitle"><div class="study-section-title"><span>01</span><h2 id="studyContentTitle">今天学什么</h2></div>' +
+    page.innerHTML = '<div class="study-setup"><header class="study-heading"><p class="study-eyebrow">每天一点，慢慢记住</p><h1>自动学习</h1><p>选好今天的内容，按自己的节奏听与记。</p></header><button type="button" class="study-scene-entry" data-action="scenes"><span><small>想练日常交流？</small><strong>场景句子</strong><span>24 个场景 · 先选任务，再听完整对话</span></span><b aria-hidden="true">→</b></button>' +
+      '<div class="study-layout"><div class="study-main"><section class="study-panel" aria-labelledby="studyContentTitle"><div class="study-section-title"><span>01</span><h2 id="studyContentTitle">今天记哪些词</h2></div>' +
       '<div class="study-sources">' + SOURCES.map(([key, title, detail]) => '<button type="button" data-key="source" data-value="' + key + '" aria-pressed="' + (s.source === key) + '"><strong>' + title + '</strong><small>' + detail + '</small></button>').join('') + '</div><div class="study-source-options">' +
       (s.source === 'level' ? '<p class="study-label">选择等级 <span>可多选</span></p>' + levels(s) + '<p class="study-note">等级为本站学习分类，供选择难度时参考。</p>' :
         s.source === 'theme' ? categories(s) :
         s.source === 'book' ? '<div class="study-source-message"><strong>重温你收藏的词</strong><p>包含词库收藏和 AI 搜索收藏。语法收藏不计入单词播放。</p><button type="button" data-action="book">查看生词本 →</button></div>' :
         s.source === 'all' ? '<div class="study-source-message"><strong>从整个词库中随机抽取</strong><p>适合不限等级的综合练习。</p></div>' : '') + '</div>' +
-      '<details class="study-advanced"' + (mixed ? ' open' : '') + '><summary>组合筛选</summary><p class="study-note">等级与场景取交集，再加入专项词。适用于已有的组合设置。</p><button type="button" data-key="source" data-value="mixed" aria-pressed="' + mixed + '">使用组合筛选</button>' +
-      (mixed ? '<div class="study-mixed"><label><input type="checkbox" data-flag="lvlOn"' + (s.lvlOn !== false ? ' checked' : '') + '> 按等级筛选</label>' + (s.lvlOn !== false ? levels(s) : '') + '<label><input type="checkbox" data-flag="catOn"' + (s.catOn ? ' checked' : '') + '> 按场景筛选</label>' + (s.catOn ? categories(s) : '') + '<label><input type="checkbox" data-flag="customOn"' + (s.customOn ? ' checked' : '') + '> 加入专项词</label>' + (s.customOn ? choices('customCategories', SPECIAL.map(v => [v, v]), s.customCategories.length ? s.customCategories : SPECIAL) : '') + '</div>' : '') + '</details></section>' +
+      '<details class="study-advanced"' + (mixed ? ' open' : '') + '><summary>组合筛选</summary><p class="study-note">等级与主题取交集，再加入专项词。适用于已有的组合设置。</p><button type="button" data-key="source" data-value="mixed" aria-pressed="' + mixed + '">使用组合筛选</button>' +
+      (mixed ? '<div class="study-mixed"><label><input type="checkbox" data-flag="lvlOn"' + (s.lvlOn !== false ? ' checked' : '') + '> 按等级筛选</label>' + (s.lvlOn !== false ? levels(s) : '') + '<label><input type="checkbox" data-flag="catOn"' + (s.catOn ? ' checked' : '') + '> 按主题筛选</label>' + (s.catOn ? categories(s) : '') + '<label><input type="checkbox" data-flag="customOn"' + (s.customOn ? ' checked' : '') + '> 加入专项词</label>' + (s.customOn ? choices('customCategories', SPECIAL.map(v => [v, v]), s.customCategories.length ? s.customCategories : SPECIAL) : '') + '</div>' : '') + '</details></section>' +
       '<section class="study-panel" aria-labelledby="studySessionTitle"><div class="study-section-title"><span>02</span><h2 id="studySessionTitle">这一轮怎么学</h2></div><fieldset><legend>单词数量</legend>' + choices('count', [[10, '10 词'], [20, '20 词'], [50, '50 词'], [100, '100 词'], [0, '全部']], s.count) + '</fieldset><fieldset><legend>播放内容</legend>' + choices('format', [['word', '只听单词'], ['word_sent', '单词 + 例句 / 搭配']], s.format) + '</fieldset><details class="study-advanced"><summary>播放间隔 <span id="studySpeedSummary">' + s.speed + ' 秒</span></summary><p class="study-note">在基础展示时间上，额外停留的时间。</p>' + choices('speed', [[0, '不停顿'], [0.5, '0.5 秒'], [1, '1 秒'], [2, '2 秒'], [3, '3 秒']], s.speed) + '</details></section></div>' +
       '<aside class="study-ready" aria-labelledby="studyReadyTitle"><span class="study-ready-icon" aria-hidden="true">あ</span><h2 id="studyReadyTitle">准备好就开始</h2><p id="studyReadyDescription"></p><div class="study-total"><strong id="studyTotal">0</strong><span>词 / 本轮</span></div><p class="study-note" id="studyAvailable"></p><div class="study-start-bar"><div class="study-mobile-summary" aria-hidden="true"><strong id="studyMobileCount"></strong><span>本轮学习</span></div><button type="button" class="study-start" id="studyStart" data-action="start">开始学习 <span aria-hidden="true">→</span></button></div><p class="study-note study-ready-footnote">随时暂停、切换单词或停止。</p><p class="study-empty" id="studyEmpty" role="status" hidden></p></aside></div><p class="study-status sr-only" id="studyStatus" role="status" aria-live="polite"></p></div>';
     page.onclick = onClick;
@@ -134,7 +143,7 @@
     page.querySelector('#studyStart').disabled = !count;
     const empty = page.querySelector('#studyEmpty');
     empty.hidden = !!count;
-    empty.textContent = s.source === 'book' ? '还没有可播放的收藏。先去词库或搜索中收藏几个词吧。' : '请选择场景、主题或等级；多个分类会合并词汇，相同条目只播放一次。';
+    empty.textContent = s.source === 'book' ? '还没有可播放的收藏。先去词库或搜索中收藏几个词吧。' : '请选择主题或等级；多个分类会合并词汇，相同条目只播放一次。';
     page.querySelector('#studyStatus').textContent = '已选择 ' + count + ' 词，共有 ' + available + ' 词可选。';
   }
   function onClick(event) {
@@ -143,6 +152,7 @@
     const action = button.dataset.action;
     if (action === 'start') return root.startVocabAutoPlay({ manual: true });
     if (action === 'book') return go('book');
+    if (action === 'scenes') return root.SceneStudy.open();
     const s = read();
     const key = button.dataset.key;
     if (!key) return;
