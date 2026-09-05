@@ -1286,6 +1286,7 @@ html { overflow:hidden; }
 .scan-history-preview{font-size:13px;line-height:1.7;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 #scanAnalysisContent{font-size:14px;line-height:1.9;color:var(--text-primary)}
 </style>
+<link rel="stylesheet" href="ui.css?v=356">
 </head>
 <body>
 <div class="ambient-glow">
@@ -1296,7 +1297,7 @@ html { overflow:hidden; }
 <header class="topbar">
   <button class="topbar__back" id="topbarBack" onclick="go('home')">←</button>
   <div class="topbar__logo" onclick="go('home')" style="cursor:pointer">
-    <span class="topbar__main">✦ 行小之的外语角 ✦</span>
+    <span class="topbar__main">行小之 · 日语角</span>
   </div>
   <span class="topbar__title" id="topbarTitle"></span>
 </header>
@@ -1341,6 +1342,7 @@ html { overflow:hidden; }
       <span class="sub-icon">🗂️</span>
       <span class="sub-label">单词库</span>
     </div>
+    <div class="submenu-item" onclick="go('grammar');closeSubmenu()"><span class="sub-icon" aria-hidden="true">文</span><span class="sub-label">语法库</span></div>
   </div>
 </div>
 
@@ -1354,7 +1356,7 @@ html { overflow:hidden; }
     </div>
     <div class="submenu-item" onclick="go('book');closeSubmenu()">
       <span class="sub-icon">🗂️</span>
-      <span class="sub-label">单词本</span>
+      <span class="sub-label">生词本</span>
     </div>
     <div class="submenu-item" onclick="go('wrong');closeSubmenu()">
       <span class="sub-icon">⚠️</span>
@@ -1385,14 +1387,14 @@ html { overflow:hidden; }
   <!-- ◉ 节奏一：品牌标题 -->
   <div class="brand-section">
     <h1 class="brand-title">日本語コーナー</h1>
-    <p class="brand-subtitle">快乐背单词</p>
+    <p class="brand-subtitle">把一点一滴，变成你的日语</p>
   </div>
 
   <!-- ◉ 节奏二：搜索栏（贯穿式） -->
   <div class="search-bar-wrap">
     <div class="search-bar">
       <span class="search-icon">🔍</span>
-      <input class="search-input" id="aiSearchInput" type="text" placeholder="搜单词、搜句子、试试「美味しい」" maxlength="200" autocomplete="off">
+      <input class="search-input" id="aiSearchInput" aria-label="搜索日语单词或句子" type="text" placeholder="搜单词、搜句子、试试「美味しい」" maxlength="200" autocomplete="off">
       <span class="search-clear" id="searchClear">✕</span>
       <button class="search-btn" id="searchBtn">搜索</button>
     </div>
@@ -1413,7 +1415,7 @@ html { overflow:hidden; }
       <div class="pair-card-icon">📚</div>
       <div class="pair-card-text">
         <div class="pair-card-title">自动背单词</div>
-        <div class="pair-card-sub">考级分类 · 场景分类 · 自动播放</div>
+        <div class="pair-card-sub">选一组词，按自己的节奏学习</div>
       </div>
       <div class="pair-card-arrow">→</div>
     </div>
@@ -1439,10 +1441,7 @@ html { overflow:hidden; }
         <div class="game-wide-title">单词大冒险</div>
         <div class="game-wide-sub">爬塔答题 · 拳击对战</div>
       </div>
-      <div class="game-wide-chips">
-        <span class="game-chip game-chip-challenge" onclick="showT('⚡ 今日挑战 — 即将上线，敬请期待')">⚡ 今日挑战</span>
-        <span class="game-chip game-chip-rank" onclick="showT('🏆 排行榜 — 即将上线，敬请期待')">🏆 排行榜</span>
-      </div>
+
       <div class="game-wide-arrow">→</div>
     </div>
   </div>
@@ -1522,7 +1521,7 @@ html { overflow:hidden; }
         <button class="tab" onclick="setF('n1',this)">N1</button>
       </div>
       <div class="st3" style="display:inline-flex;margin-left:6px">
-        <button class="tab active" onclick="sortV('freq',this)">📊 高频↓</button>
+        <button class="tab active" onclick="sortV('freq',this)">推荐排序</button>
         <button class="tab" onclick="sortV('random',this)">🔀 随机</button>
         <button class="tab" onclick="sortV('rand100',this)">🎲 随机100词</button>
         <button class="tab" onclick="sortV('rand200',this)">🎲 随机200词</button>
@@ -1539,7 +1538,7 @@ html { overflow:hidden; }
         <button class="tab" onclick="setVMark('green',this)" title="筛选已掌握">🟢</button>
       </div>
       <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
-        <span id="sortLabel" style="font-size:11px;color:#888">📊 高频降序</span>
+        <span id="sortLabel" style="font-size:11px;color:#888">推荐排序</span>
         <span id="vocabCount" style="font-size:11px;color:#6b7280"></span>
         <button class="btn bs" style="padding:5px 12px;font-size:11px" onclick="startStudyFromWall()">▶ 逐词学习</button>
         <button class="btn bg" style="padding:5px 8px;font-size:11px" onclick="showAutoPlayOptions()">⏱ 选项</button>
@@ -1547,9 +1546,7 @@ html { overflow:hidden; }
       </div>
     </div>
     <div class="legend">
-      <span class="fb fb-s">★★★★</span> 常考(8次+)&nbsp;&nbsp;
-      <span class="fb fb-a">★★★</span> 高频(5-7次)&nbsp;&nbsp;
-      <span class="fb fb-b">★★</span> 常见(3-4次)
+      等级与推荐排序为本站整理参考，不代表官方考纲或考试出现次数。
     </div>
     <div id="planFilterBanner"></div>
     <div class="vg" id="vocabG"></div>
@@ -1638,6 +1635,7 @@ html { overflow:hidden; }
       <button class="btn bs" style="padding:5px 8px;font-size:11px" onclick="startGAutoPlay()">▶ 自动播放</button>
     </div>
   </div>
+  <p class="legend">分组沿用旧词库，包含跨等级语法；请结合具体条目的接续和例句学习。</p>
   <div class="gl" id="grammarL"></div>
 </div>
 
@@ -1647,8 +1645,8 @@ html { overflow:hidden; }
     <div class="qg" style="margin-bottom:16px">
       <div class="ac" onclick="startQuiz()" style="border-color:rgba(168,85,247,0.3)">
         <div class="ai">📝</div>
-        <div class="at">模拟真题训练</div>
-        <div class="ad">精选历年高频 + 核心真题 · 每轮10题综合模拟</div>
+        <div class="at">综合练习</div>
+        <div class="ad">词汇与语法综合练习 · 每轮 10 题</div>
       </div>
     </div>
   </div>
@@ -1816,7 +1814,7 @@ html { overflow:hidden; }
   <div class="df" style="padding:10px 16px;border-top:1px solid rgba(255,255,255,0.06)">
     <button class="btn bs" style="padding:6px 12px;font-size:12px" onclick="speakDW()">🔊 朗读</button>
     <button class="btn bp" style="padding:6px 12px;font-size:12px" onclick="closeD();startStudyFromWall(dwId)">▶ 从本词学习</button>
-    <button class="btn bg" style="padding:6px 12px;font-size:12px" id="bookBtn" onclick="toggleBook(dwId)">📗 生词本</button>
+    <button class="btn bg" style="padding:6px 12px;font-size:12px" id="bookBtn" onclick="toggleBook({type:'vocab',id:dwId});updateBookBtn(dwId)">📗 生词本</button>
     <button class="btn" style="padding:6px 12px;font-size:12px;background:rgba(78,204,163,0.12);color:#4ecca3" id="hideKanjiBtn" onclick="toggleHideKanji()">👁 只看平假名</button>
   </div>
 </div>
@@ -1861,7 +1859,7 @@ html { overflow:hidden; }
   </div>
   <div class="ap-controls">
     <button class="btn bs" style="padding:8px 16px" onclick="apTogglePause()">⏸ 暂停</button>
-    <button class="btn" style="padding:8px 16px;background:rgba(78,204,163,0.12);color:#4ecca3;border:1px solid rgba(78,204,163,0.25);font-size:13px" id="apDisplayToggle" onclick="cycleApDisplayMode()">隐藏汉字</button>
+    <button class="btn" style="padding:8px 16px;background:rgba(78,204,163,0.12);color:#4ecca3;border:1px solid rgba(78,204,163,0.25);font-size:13px" data-display-toggle onclick="cycleApDisplayMode()">隐藏汉字</button>
     <button class="btn br" style="padding:8px 16px" onclick="apStop()">⏹ 停止</button>
   </div>
   <button class="ap-nav ap-nav-left" onclick="apPrev()">‹</button>
@@ -1908,7 +1906,7 @@ html { overflow:hidden; }
   </div>
   <div class="ap-controls" style="margin-top:20px">
     <button class="btn bs" style="padding:8px 16px" onclick="gApTogglePause()">⏸ 暂停</button>
-    <button class="btn" style="padding:8px 16px;background:rgba(78,204,163,0.12);color:#4ecca3;border:1px solid rgba(78,204,163,0.25);font-size:13px" id="apDisplayToggle" onclick="cycleApDisplayMode()">隐藏汉字</button>
+    <button class="btn" style="padding:8px 16px;background:rgba(78,204,163,0.12);color:#4ecca3;border:1px solid rgba(78,204,163,0.25);font-size:13px" data-display-toggle onclick="cycleApDisplayMode()">隐藏汉字</button>
     <button class="btn br" style="padding:8px 16px" onclick="gApStop()">⏹ 停止</button>
   </div>
   <button class="ap-nav ap-nav-left" onclick="gApPrev()">‹</button>
@@ -1987,7 +1985,7 @@ function go(e) {
   var navBtn = document.querySelector('.bottombar__item[data-section="' + sec + '"]');
   navBtn && navBtn.classList.add("bottombar__item--active");
   var titles = { home:"", vocab:"单词库", grammar:"背语法", review:"待复习",
-    book:"单词本", quiz:"模拟题", wrong:"错题本", autoplay:"自动背单词",
+    book:"生词本", quiz:"模拟题", wrong:"错题本", autoplay:"自动背单词",
     game:"单词大冒险", scan:"拍照识图", studyplan:"学习计划", settings:"" };
   var titleEl = document.getElementById("topbarTitle");
   titleEl && (titleEl.textContent = titles[e] || "", titleEl.classList.toggle("show", !!titles[e]));
@@ -2014,13 +2012,14 @@ function go(e) {
 }
 </script>
 
-<script src="data.js?v=354"></script>
-<script src="grammar_data.js?v=354"></script>
+<script src="data.js?v=356"></script>
+<script src="grammar_data.js?v=356"></script>
 <script src="quiz_data_high.js?v=354"></script>
 <script src="quiz_data_normal.js?v=354"></script>
 <script src="ai-client.js?v=355"></script>
 <script src="scan.js?v=355"></script>
-<script src="inline.js?v=355"></script>
+<script src="autoplay-setup.js?v=356"></script>
+<script src="inline.js?v=356"></script>
 <script src="game/tower-climb.js?v=354"></script>
 
 
@@ -2067,11 +2066,6 @@ function go(e) {
     origStart();
     if(_apQueue&&_apQueue.length>1) _apQueue.sort(function(a,b){return (b.appear||0)-(a.appear||0)});
   };
-  var origVStart = startVocabAutoPlay;
-  startVocabAutoPlay = function(){
-    origVStart();
-    if(_vApQueue&&_vApQueue.length>1) _vApQueue.sort(function(a,b){return (b.appear||0)-(a.appear||0)});
-  };
   var origGStart = startGAutoPlay;
   startGAutoPlay = function(){
     origGStart();
@@ -2079,37 +2073,7 @@ function go(e) {
   };
 })();
 
-/* 自动播放：显示高频等级/频次 */
-(function(){
-  var freqElem = null;
-  function updateFreq(){
-    var screen=document.querySelector('#apScreen.show')||document.querySelector('#gApScreen.show');
-    if(!screen){freqElem=null;return;}
-    var card=screen.querySelector('.ap-card');
-    if(!card){freqElem=null;return;}
-    var wordEl=card.querySelector('.ap-word');
-    if(!wordEl||!wordEl.textContent){freqElem=null;return;}
-    var wordText=wordEl.textContent.trim();
-    if(!wordText){freqElem=null;return;}
-    var newFreq=card.querySelector('.ap-freq');
-    if(!newFreq)return;
-    if(freqElem!==newFreq)freqElem=newFreq;
-    // 只在频次变化时更新
-    var lastWord=freqElem.getAttribute('data-word');
-    if(lastWord===wordText)return;
-    freqElem.setAttribute('data-word',wordText);
-    var w=VOCAB_DATA.find(function(v){return v.word===wordText||v.reading===wordText});
-    if(w&&w.appear){
-      var a=w.appear;
-      var label=a>=7?'🔥 高频':a>=5?'⚡ 较高频':a>=4?'📗 中频':'📘 低频';
-      freqElem.textContent=label+' · 频次 '+a;
-    }else{
-      freqElem.textContent='';
-    }
-  }
-  setInterval(updateFreq,300);
-})();
-// // 团团链路增强：功能间交叉链接
+// 团团链路增强：功能间交叉链接
 (function(){
   function doEnhanceVocab(){
     var page=document.querySelector('.page.active');
@@ -2170,9 +2134,9 @@ function go(e) {
       if(!title)return;
       var link=document.createElement('span');
       link.className='al-quiz-link';
-      link.textContent='📋去真题';
+      link.textContent='去练习';
       link.style.cssText='display:inline-block;font-size:10px;color:#f5a623;cursor:pointer;margin-left:6px;padding:1px 6px;border:1px solid rgba(245,166,35,0.3);border-radius:4px;background:rgba(245,166,35,0.08)';
-      link.title='去真题看看这个语法点';
+      link.title='打开综合练习';
       link.onclick=function(e){e.stopPropagation();go('quiz')};
       title.parentNode.insertBefore(link,title.nextSibling);
     });
@@ -2202,7 +2166,7 @@ function toggleHideKanji(){
 function cycleApDisplayMode(){
   var card=document.querySelector('#apScreen.show .ap-card')||document.querySelector('#gApScreen.show .ap-card');
   if(!card)return;
-  var btn=document.getElementById('apDisplayToggle');
+  var btn=card.closest('#apScreen, #gApScreen').querySelector('[data-display-toggle]');
   var state=parseInt(card.dataset.displayState||'0');
   state=(state+1)%3;
   card.dataset.displayState=state;
@@ -2335,312 +2299,6 @@ function updateBookAiFilterBtn(){
   }
 })();
 
-/* === Feature 2: 自动背单词选项页 — 生词本来源 === */
-(function(){
-  /* Override renderAutoPlayOptions to add 生词本 section */
-  var origRenderAP = window.renderAutoPlayOptions;
-  window.renderAutoPlayOptions = function(){
-    origRenderAP();
-    var e = document.getElementById('p-autoplay');
-    if(!e) return;
-    var sections = e.querySelectorAll('.ap-section');
-    if(sections.length < 2) return;
-    var settings = JSON.parse(localStorage.getItem('ap_settings') || '{}');
-    var bookOn = settings.bookOn || false;
-    /* Insert 生词本 section after the category section (2nd section) */
-    var bookSection = document.createElement('div');
-    bookSection.className = 'ap-section';
-    bookSection.style.cssText = 'padding:14px 16px;background:rgba(255,255,255,0.03);border-radius:10px;margin-bottom:12px;border:1px solid rgba(255,255,255,0.06)';
-    bookSection.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center">'
-      + '<span onclick="_apToggleBookSource()" style="cursor:pointer;display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:#e2e8f0">'
-      + '<span class="ap-checkbox' + (bookOn ? ' ap-checked' : '') + '" id="ap-cb-book">' + (bookOn ? '☑' : '☐') + '</span>'
-      + '📖 生词本来源</span></div>'
-      + '<div id="ap-book-info" style="margin-top:8px;font-size:12px;' + (bookOn ? '' : 'opacity:0.5') + '">'
-      + (bookOn ? '✅ 仅从生词本播放' : '☐ 从全部词库播放')
-      + '</div>';
-    /* Insert after category section (before the first non-ap-section child) */
-    var catSection = sections[1]; /* category section */
-    catSection.parentNode.insertBefore(bookSection, catSection.nextElementSibling);
-  };
-
-  /* Toggle function for 生词本 source */
-  window._apToggleBookSource = function(){
-    var settings = JSON.parse(localStorage.getItem('ap_settings') || '{}');
-    settings.bookOn = !settings.bookOn;
-    localStorage.setItem('ap_settings', JSON.stringify(settings));
-    renderAutoPlayOptions();
-  };
-
-  /* Override startVocabAutoPlay to support book source */
-  window.startVocabAutoPlay = (function(origFn){
-    return function(){
-      var settings = JSON.parse(localStorage.getItem('ap_settings') || '{}');
-      if(settings.bookOn){
-        /* Build queue from 生词本 */
-        var book = getBook();
-        if(!book.length){ showT('生词本为空'); return; }
-        /* Map book items to VOCAB entries (vocab type) + keep AI entries */
-        var queue = [];
-        book.forEach(function(b){
-          if(b.type === 'vocab' && b.id){
-            var v = VOCAB.find(function(x){ return x.id === b.id; });
-            if(v) queue.push(v);
-          } else if(b.type === 'ai'){
-            /* For AI entries, create a pseudo-vocab object */
-            queue.push({
-              id: b.id || 'ai_' + b.word,
-              word: b.word,
-              reading: b.reading || '',
-              meaning: b.meaning || '',
-              level: b.level || 'N3',
-              category: '',
-              type: 'ai'
-            });
-          }
-        });
-        if(!queue.length){ showT('生词本中的词汇不在词库中'); return; }
-        /* Shuffle */
-        queue.sort(function(){ return Math.random() - 0.5; });
-        var count = typeof settings.count === 'number' ? settings.count : 50;
-        if(count > 0 && queue.length > count) queue = queue.slice(0, count);
-        /* Save today's word IDs */
-        settings.todayWordIds = queue.map(function(v){ return v.id; });
-        settings.planDate = new Date().toISOString().split('T')[0];
-        localStorage.setItem('ap_settings', JSON.stringify(settings));
-        /* Start playback using the existing internal setup */
-        _vApQueue = queue;
-        _vApIdx = 0;
-        _vApPaused = false;
-        _vApActive = true;
-        _vApPlanAdv = false;
-        var screen = document.getElementById('gApScreen');
-        if(screen){
-          screen.querySelectorAll('.btn').forEach(function(b){
-            b.textContent.indexOf('暂停') >= 0 || b.textContent.indexOf('继续') >= 0
-              ? (b.onclick = vApTogglePause)
-              : b.textContent.indexOf('停止') >= 0 && (b.onclick = vApStop);
-          });
-          screen.querySelector('.ap-nav-left').onclick = vApPrev;
-          screen.querySelector('.ap-nav-right').onclick = vApNext;
-          document.getElementById('gApBmk').onclick = vApToggleBook;
-          screen.querySelectorAll('.ap-marks .vm-btn').forEach(function(b){
-            var c = b.getAttribute('data-color');
-            b.onclick = function(){ vApToggleMark(c); };
-          });
-          screen.querySelector('.ap-word').style.fontSize = '56px';
-          screen.classList.add('show');
-        }
-        _vApSpeed = settings.speed || 1;
-        vApShowCard();
-      } else {
-        /* Normal flow — call original */
-        origFn();
-      }
-    };
-  })(window.startVocabAutoPlay);
-})();
-
-/* === Feature 3: 自动背单词选项页 — 自定义分类 === */
-(function(){
-  var AP_CUSTOM_CATEGORIES = [
-    { key: 'N2听力', label: 'N2听力' },
-    { key: 'N2阅读', label: 'N2阅读' },
-    { key: '拟声拟态', label: '拟声词/叠词' },
-    { key: '外来语', label: '外来语' },
-    { key: '易混汉字词', label: '易混汉字' }
-  ];
-
-  function getApCustomCounts(){
-    var counts = {};
-    AP_CUSTOM_CATEGORIES.forEach(function(item){ counts[item.key] = 0; });
-    VOCAB.forEach(function(v){
-      if (v && Object.prototype.hasOwnProperty.call(counts, v.category)) counts[v.category]++;
-    });
-    return counts;
-  }
-
-  function isApCustomSelected(settings, key){
-    var selected = settings.customCategories || [];
-    return selected.length === 0 || selected.indexOf(key) >= 0;
-  }
-
-  function apTagStyle(active){
-    return 'display:inline-block;padding:6px 12px;border-radius:14px;font-size:12px;font-weight:600;cursor:pointer;transition:background 0.2s,color 0.2s;' +
-      (active ? 'background:linear-gradient(135deg,#06b6d4,#3b82f6);color:#fff' : 'background:rgba(255,255,255,0.06);color:#64748b');
-  }
-
-  var origRenderCustomAP = window.renderAutoPlayOptions;
-  window.renderAutoPlayOptions = function(){
-    origRenderCustomAP();
-    var page = document.getElementById('p-autoplay');
-    if (!page || page.querySelector('#ap-custom-section')) return;
-    var sections = page.querySelectorAll('.ap-section');
-    if (!sections.length) return;
-
-    var settings = JSON.parse(localStorage.getItem('ap_settings') || '{}');
-    var customOn = !!settings.customOn;
-    var counts = getApCustomCounts();
-    var section = document.createElement('div');
-    section.className = 'ap-section';
-    section.id = 'ap-custom-section';
-    section.style.cssText = 'padding:14px 16px;background:rgba(255,255,255,0.03);border-radius:10px;margin-bottom:12px;border:1px solid rgba(255,255,255,0.06)';
-    section.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center">'
-      + '<span onclick="_apToggleCustomSection()" style="cursor:pointer;display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:#e2e8f0">'
-      + '<span class="ap-checkbox' + (customOn ? ' ap-checked' : '') + '" id="ap-cb-custom">' + (customOn ? '☑' : '☐') + '</span>🎯 自定义分类</span>'
-      + '<span style="display:flex;gap:6px;align-items:center">'
-      + (customOn ? '<span onclick="event.stopPropagation();_apCustomAll()" style="font-size:11px;color:#4ecca3;cursor:pointer">全选</span>' : '')
-      + '<span id="ap-custom-arrow" onclick="_apToggle(document.getElementById(\'ap-custom-section\'),\'ap-custom-body\')" style="color:#64748b;font-size:14px;cursor:pointer;transition:transform 0.2s">▼</span>'
-      + '</span></div>'
-      + '<div id="ap-custom-body" style="margin-top:12px;display:flex;flex-wrap:wrap;gap:6px;' + (customOn ? '' : 'opacity:0.35;pointer-events:none') + '">'
-      + AP_CUSTOM_CATEGORIES.map(function(item){
-        var active = isApCustomSelected(settings, item.key);
-        var count = counts[item.key] || 0;
-        var text = item.label + (count ? ' (' + count + '词)' : '');
-        return '<span class="ap-tag' + (active ? ' ap-tag-on' : '') + '" data-custom-cat="' + item.key + '" onclick="_apToggleCustomCat(this)" style="' + apTagStyle(active) + '">' + text + '</span>';
-      }).join('')
-      + '</div>';
-
-    sections[0].parentNode.insertBefore(section, sections[0].nextElementSibling);
-  };
-
-  function apAnySourceOn(settings){
-    return settings.lvlOn !== false || !!settings.catOn || !!settings.customOn || !!settings.bookOn;
-  }
-
-  window._apToggleCustomSection = function(){
-    var settings = JSON.parse(localStorage.getItem('ap_settings') || '{}');
-    delete settings.todayWordIds;
-    settings.customOn = !settings.customOn;
-    if (!apAnySourceOn(settings)) settings.customOn = true;
-    localStorage.setItem('ap_settings', JSON.stringify(settings));
-    renderAutoPlayOptions();
-  };
-
-  window._apToggleLvlSection = function(){
-    var settings = JSON.parse(localStorage.getItem('ap_settings') || '{}');
-    delete settings.todayWordIds;
-    settings.lvlOn = !(settings.lvlOn !== false);
-    if (!apAnySourceOn(settings)) settings.lvlOn = true;
-    localStorage.setItem('ap_settings', JSON.stringify(settings));
-    renderAutoPlayOptions();
-  };
-
-  window._apToggleCatSection = function(){
-    var settings = JSON.parse(localStorage.getItem('ap_settings') || '{}');
-    delete settings.todayWordIds;
-    settings.catOn = !settings.catOn;
-    if (!apAnySourceOn(settings)) settings.catOn = true;
-    localStorage.setItem('ap_settings', JSON.stringify(settings));
-    renderAutoPlayOptions();
-  };
-
-  window._apToggleCustomCat = function(el){
-    var settings = JSON.parse(localStorage.getItem('ap_settings') || '{}');
-    var selected = settings.customCategories || [];
-    var key = el.getAttribute('data-custom-cat');
-    delete settings.todayWordIds;
-    if (selected.length === 0) selected = AP_CUSTOM_CATEGORIES.map(function(item){ return item.key; });
-    var idx = selected.indexOf(key);
-    if (idx >= 0) selected.splice(idx, 1); else selected.push(key);
-    if (selected.length === AP_CUSTOM_CATEGORIES.length) selected = [];
-    if (selected.length === 0 && AP_CUSTOM_CATEGORIES.length > 0) selected = AP_CUSTOM_CATEGORIES.map(function(item){ return item.key; });
-    settings.customCategories = selected;
-    localStorage.setItem('ap_settings', JSON.stringify(settings));
-    renderAutoPlayOptions();
-  };
-
-  window._apCustomAll = function(){
-    var settings = JSON.parse(localStorage.getItem('ap_settings') || '{}');
-    delete settings.todayWordIds;
-    settings.customCategories = [];
-    localStorage.setItem('ap_settings', JSON.stringify(settings));
-    renderAutoPlayOptions();
-  };
-
-  function apMatchesBaseFilters(v, settings){
-    var selLvls = settings.levels || ['n5','n4','n3'];
-    var selCats = settings.categories || [];
-    var lvlOn = settings.lvlOn !== false;
-    var catOn = settings.catOn || false;
-    var lvlMatch = lvlOn && selLvls.indexOf(v.level) >= 0;
-    var catMatch = catOn && (selCats.length === 0 || selCats.indexOf(v.category) >= 0);
-    if (lvlOn && catOn) return lvlMatch && catMatch;
-    return lvlMatch || catMatch;
-  }
-
-  function apMatchesCustomFilters(v, settings){
-    if (!settings.customOn) return false;
-    var selected = settings.customCategories || [];
-    return AP_CUSTOM_CATEGORIES.some(function(item){
-      return item.key === v.category && (selected.length === 0 || selected.indexOf(item.key) >= 0);
-    });
-  }
-
-  function startApQueue(queue, settings){
-    _vApQueue = queue;
-    _vApIdx = 0;
-    _vApPaused = false;
-    _vApActive = true;
-    _vApPlanAdv = false;
-    var screen = document.getElementById('gApScreen');
-    if (screen) {
-      screen.querySelectorAll('.btn').forEach(function(btn){
-        btn.textContent.indexOf('暂停') >= 0 || btn.textContent.indexOf('继续') >= 0
-          ? (btn.onclick = vApTogglePause)
-          : btn.textContent.indexOf('停止') >= 0 && (btn.onclick = vApStop);
-      });
-      screen.querySelector('.ap-nav-left').onclick = vApPrev;
-      screen.querySelector('.ap-nav-right').onclick = vApNext;
-      document.getElementById('gApBmk').onclick = vApToggleBook;
-      screen.querySelectorAll('.ap-marks .vm-btn').forEach(function(btn){
-        var color = btn.getAttribute('data-color');
-        btn.onclick = function(){ vApToggleMark(color); };
-      });
-      screen.querySelector('.ap-word').style.fontSize = '56px';
-      screen.classList.add('show');
-    }
-    _vApSpeed = settings.speed || 1;
-    vApShowCard();
-  }
-
-  var origStartCustomAP = window.startVocabAutoPlay;
-  window.startVocabAutoPlay = function(){
-    var settings = JSON.parse(localStorage.getItem('ap_settings') || '{}');
-    if (settings.bookOn || !settings.customOn) {
-      origStartCustomAP();
-      return;
-    }
-
-    var queue;
-    if (settings.todayWordIds && settings.todayWordIds.length > 0) {
-      queue = settings.todayWordIds.map(function(id){
-        return VOCAB.find(function(v){ return v.id === id; });
-      }).filter(Boolean);
-    } else {
-      queue = VOCAB.filter(function(v){
-        return apMatchesBaseFilters(v, settings) || apMatchesCustomFilters(v, settings);
-      });
-      if (!queue.length) {
-        showT('没有符合条件的词汇，请调整筛选条件');
-        return;
-      }
-      queue = queue.slice().sort(function(){ return Math.random() - 0.5; });
-      var count = typeof settings.count === 'number' ? settings.count : 50;
-      if (count > 0 && queue.length > count) queue = queue.slice(0, count);
-      if (queue.length > 1) queue.sort(function(a, b){ return (b.appear || 0) - (a.appear || 0); });
-      settings.planDate = new Date().toISOString().split('T')[0];
-      settings.todayWordIds = queue.map(function(v){ return v.id; });
-      localStorage.setItem('ap_settings', JSON.stringify(settings));
-    }
-
-    if (!queue.length) {
-      showT('没有符合条件的词汇');
-      return;
-    }
-    if (queue.length > 1) queue.sort(function(a, b){ return (b.appear || 0) - (a.appear || 0); });
-    startApQueue(queue, settings);
-  };
-})();
 </script>
 <script>
 /* AI search bookmark: preserve and display full result details */
@@ -2890,7 +2548,7 @@ function updateBookAiFilterBtn(){
 <script>
 /* Capacitor WebView: comprehensive fix for event dispatch issues */
 (function(){
-  if (location.hostname === '' || location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.protocol === 'capacitor:') {
+  if (window.Capacitor || location.protocol === 'capacitor:') {
     /* ── Diagnostic overlay ── */
     var dbg = document.createElement('div');
     dbg.id = 'capDbg';
@@ -2985,5 +2643,6 @@ function updateBookAiFilterBtn(){
   }
 })();
 </script>
+<script src="ui.js?v=356"></script>
 </body>
 </html>
