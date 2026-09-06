@@ -7,6 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>日语角</title>
+<script src="themes.js?v=360"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Noto+Sans+JP:wght@300;400;500;700;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
@@ -1288,6 +1289,7 @@ html { overflow:hidden; }
 </style>
 <link rel="stylesheet" href="ui.css?v=357">
 <link rel="stylesheet" href="scene-study.css?v=359">
+<link rel="stylesheet" href="themes.css?v=360">
 </head>
 <body>
 <div class="ambient-glow">
@@ -1401,6 +1403,32 @@ html { overflow:hidden; }
     </div>
     <div class="search-results" id="searchResults"></div>
   </div>
+
+  <section class="theme-picker" aria-labelledby="themePickerTitle" hidden>
+    <div class="theme-heading">
+      <h2 id="themePickerTitle">主题皮肤</h2>
+      <p>换个配色，继续学习</p>
+    </div>
+    <div class="theme-options" role="group" aria-label="选择主题皮肤">
+      <button class="theme-option" type="button" data-theme-choice="night" aria-pressed="true">
+        <span class="theme-preview" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span class="theme-name">夜色</span><span class="theme-check" aria-hidden="true">✓</span>
+      </button>
+      <button class="theme-option" type="button" data-theme-choice="paper" aria-pressed="false">
+        <span class="theme-preview" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span class="theme-name">和纸</span><span class="theme-check" aria-hidden="true">✓</span>
+      </button>
+      <button class="theme-option" type="button" data-theme-choice="sakura" aria-pressed="false">
+        <span class="theme-preview" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span class="theme-name">樱花</span><span class="theme-check" aria-hidden="true">✓</span>
+      </button>
+      <button class="theme-option" type="button" data-theme-choice="ocean" aria-pressed="false">
+        <span class="theme-preview" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span class="theme-name">深海</span><span class="theme-check" aria-hidden="true">✓</span>
+      </button>
+    </div>
+    <p id="themeStatus" class="theme-status" role="status" aria-live="polite">选择会自动保存</p>
+  </section>
 
   <!-- ◉ 节奏三：快捷入口 -->
   <div class="pair-section">
