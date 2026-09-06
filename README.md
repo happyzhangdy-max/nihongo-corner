@@ -1,20 +1,70 @@
+[中文](README.zh-CN.md) · [日本語](README.ja.md) · **English**
+
 # Nihongo Corner · 日语角
 
-静态日语学习网页，包含词汇、语法、间隔复习、单词本、模拟题、自动播放、学习计划和拍照识图。
+A static web app for learning Japanese through vocabulary, grammar, spaced review and spoken dialogue practice. Learners can look up a word, listen to examples, save it and return to it in a review session, all in the browser.
 
-## 本地运行
+The interface and explanations are primarily in Chinese; the learning material is in Japanese. These three README translations describe the same application, rather than three application UI languages.
 
-无需构建或安装生产依赖。用任意静态 HTTP 服务打开仓库，例如：
+## Features
+
+- **Vocabulary and grammar:** browse and search entries, filter by level, read examples and use speech playback.
+- **Review and study plans:** saved words, a mistake collection, SM-2 spaced repetition and configurable study plans.
+- **Vocabulary autoplay:** choose a level, topic or saved-word scope, then set the count and playback options. The catalog includes 12 topics and 5 special decks, with search, multiple selection and previews.
+- **Scenario dialogues:** 24 scenarios with 12 communication tasks each, totaling 288 original two-person dialogues / 576 sentences. Lessons include speaker roles, kana, Chinese translations, keywords, individual playback, continuous playback and practice pauses.
+- **Quizzes, two vocabulary games and four themes:** night, paper, sakura and ocean. Theme preferences persist independently of learning progress.
+- **Optional AI features:** translation, explanations and Japanese text recognition from an uploaded, pasted or camera-selected image.
+
+The current dataset contains **10,654 vocabulary records and 379 grammar records**. Vocabulary records include repeated written forms and different contexts; this is not a count of unique words. The curated topics include 430 reviewed legacy entries; 240 earlier scene-related entries and their IDs remain compatible with saved words and plans.
+
+## Technology and structure
+
+| Area | Implementation |
+| --- | --- |
+| UI and application logic | HTML, CSS and vanilla JavaScript; no frontend build step |
+| Learning content | JavaScript datasets shipped with the site |
+| Browser state | `localStorage` for saved words, review state, plans and preferences |
+| Speech and images | Web Speech API; FileReader, Image and Canvas |
+| AI requests | Shared JavaScript client and an external Cloudflare Worker proxy |
+| Verification | Node.js built-in test runner, script checks, content audit and GitHub Actions |
+
+Start at [index.html](index.html). Existing page logic lives partly in [inline.js](inline.js), with separate modules for [AI transport](ai-client.js), [image recognition](scan.js), [autoplay setup](autoplay-setup.js), [catalog selection](catalog-picker.js), [scene lessons](scene-study.js) and [scene audio](scene-audio.js).
+
+## Implementation examples to review
+
+### Preventing stale results and recovering from failures
+
+Replacing or removing a scan image cancels the active request. A generation check also prevents an older response from overwriting the current image's result. Failed recognition keeps the image available for retry; failure to save history is handled separately from recognition success.
+
+Read [scan.js](scan.js) and [ai-client.js](ai-client.js). The [scan tests](tests/scan.test.js), [AI client tests](tests/ai-client.test.js) and [search tests](tests/search.test.js) cover cancellation, malformed responses, storage failures and stale responses.
+
+### Advancing playback after speech finishes
+
+Scene playback waits for the current utterance to finish, applies the practice pause, then advances. Pause, manual navigation and stop invalidate obsolete callbacks so they cannot unexpectedly advance the queue. Scene queues are independent of vocabulary filters and saved-word selections.
+
+Read [scene-audio.js](scene-audio.js), [scene-study.js](scene-study.js) and the [scene tests](tests/scenes.test.js).
+
+### Keeping saved study state compatible
+
+Stable vocabulary IDs preserve saved-word and plan references. Multiple catalog selections are deduplicated by ID, saved plans retain their order, and review scheduling supports legacy records.
+
+Read [vocabulary-catalog.js](vocabulary-catalog.js) and [autoplay-setup.js](autoplay-setup.js), alongside the [catalog](tests/catalog.test.js), [autoplay](tests/autoplay.test.js) and [study tests](tests/study.test.js).
+
+## Run locally
+
+No production dependency installation or build is required. Serve the repository with any static HTTP server. For example, with Python 3, run from the repository root:
 
 ```sh
 python -m http.server 8080 --bind 127.0.0.1
 ```
 
-浏览器访问 http://127.0.0.1:8080。直接双击 HTML 并不等价于 HTTP 环境。
+Open [http://127.0.0.1:8080](http://127.0.0.1:8080). Opening the HTML file directly is not equivalent to serving it over HTTP.
 
-## 检查
+AI features require the configured external proxy and model service to be available. The proxy's server implementation is not included in this repository; local static hosting alone does not provide an AI backend.
 
-需要 Node.js 22 或更新版本，无需 npm install：
+## Verification
+
+Use Node.js 22 or newer; `npm install` is not required:
 
 ```sh
 node check.js
@@ -22,26 +72,25 @@ node --test
 node scripts/audit-content.cjs
 ```
 
-检查覆盖页面脚本语法和资源路径，以及识图、请求取消、错误恢复、历史记录、搜索并发、复习间隔、触屏拖动、播放来源与内容导入质量。
+Local verification on **2026-09-06** passed: **28 script checks, 60 automated tests and the content structural audit**. The audit checks fields, IDs and known import defects; it also reports repeated word forms for review. It does not establish the linguistic accuracy of every entry.
 
-## 自动背单词与内容
+[GitHub Actions](.github/workflows/check.yml) runs script checks and automated tests on pushes to `main` and on pull requests. Earlier browser checks and their scope are recorded in [the validation notes](docs/VALIDATION.md). This README update did not repeat mobile hardware or native application testing.
 
-首页提供夜色、和纸、樱花、深海四款主题皮肤，点选即生效并保存到当前浏览器；皮肤设置独立于词汇收藏和学习进度。
+## Limitations and data handling
 
-按等级、主题或生词本选择范围，设置数量后即可开始。词汇目录分为 12 个主题和 5 个语言专项，支持搜索、多选和词句预览。场景学习使用独立的完整对话。
+- **Browser storage:** learning state stays in the current browser. There is no account-based cloud synchronization in this codebase.
+- **External AI services:** submitted queries and images are sent through the configured proxy to the model service. [ai-client.js](ai-client.js) centralizes configuration; provider secret keys are not embedded in the frontend.
+- **Image processing:** the input limit is 20 MiB. Images are converted to JPEG with a maximum long edge of 1600 pixels before upload. HEIC/HEIF files that the browser cannot decode must first be converted to JPG or PNG. History stores recognition text, translations and explanations, not the image itself.
+- **Speech and devices:** voices depend on the browser and device. Local browser checks do not replace physical Android/iOS camera or native app acceptance testing.
+- **Learning content:** levels and recommendation order are study references, not an official JLPT syllabus or measured exam frequencies. Further linguistic review of legacy material remains necessary.
+- **Scene sources:** scene dialogues are project-authored. Public teaching resources inform task contexts; their dialogues, audio and exam questions are not presented as imported materials. See [source and authorship boundaries](docs/SCENE_SENTENCES.md).
+- **License:** the repository currently has no LICENSE file. These README translations do not grant a new license to reuse the code or learning material.
 
-场景句子包含 24 个场景、288 组原创双人对话（576 句）。每场景有 12 个交流任务，提供双方角色、假名、中文、关键词和参考教材链接；支持按任务学习、单句试听、对话连播与跟读停顿。连播等当前句读完后再推进，旧词库筛选不参与场景队列。
+## Further documentation
 
-[场景句子与参考来源](docs/SCENE_SENTENCES.md) 说明任务匹配与原创边界。旧版 240 条词汇及收藏 ID 保留兼容；主题另收录 430 条已核对原词条，详见 [主题与场景词库](docs/SCENE_CATALOG.md)。
+The following detailed records are currently in Chinese:
 
-等级和推荐排序为本站整理参考，不代表官方考纲或考试出现次数。内容校订范围及验证边界见 [内容与界面优化记录](docs/CONTENT_REVIEW_2026-09-05.md)。
-
-## 拍照识图
-
-- 从相册选择、拍照或粘贴图片后自动识别；失败时保留图片，可直接重试。
-- 最大 20 MiB；上传前转成 JPEG，长边最多 1600 像素。
-- 浏览器无法解码的 HEIC/HEIF 图片需要先转换成 JPG 或 PNG。
-- 图片经现有代理发送给模型服务。服务配置集中在 ai-client.js，前端不包含提供商密钥。
-- 翻译和解析保存在当前浏览器的历史记录中；图片本身不写入历史。
-
-修复与验证记录见 [docs/VALIDATION.md](docs/VALIDATION.md)。本地浏览器走查不能代替手机实机相机和原生应用验证。
+- [Fixes and validation scope](docs/VALIDATION.md)
+- [Content review and remaining limitations](docs/CONTENT_REVIEW_2026-09-05.md)
+- [Catalog organization and compatibility](docs/SCENE_CATALOG.md)
+- [Scenario dialogues and reference sources](docs/SCENE_SENTENCES.md)
