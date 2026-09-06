@@ -12,8 +12,10 @@
   document.documentElement.dataset.theme = current;
 
   function init() {
-    const picker = document.querySelector('.theme-picker');
-    if (!picker) return;
+    const menu = document.querySelector('.theme-menu');
+    const picker = document.getElementById('themePanel');
+    const toggle = document.getElementById('themeToggle');
+    if (!menu || !picker || !toggle) return;
     const status = document.getElementById('themeStatus');
     function render() {
       picker.querySelectorAll('[data-theme-choice]').forEach(button => {
@@ -21,7 +23,30 @@
       });
     }
     render();
-    picker.hidden = false;
+    menu.hidden = false;
+    function close(restoreFocus) {
+      picker.hidden = true;
+      toggle.setAttribute('aria-expanded', 'false');
+      if (restoreFocus) toggle.focus({preventScroll: true});
+    }
+    toggle.addEventListener('click', () => {
+      if (!picker.hidden) return close(false);
+      picker.hidden = false;
+      toggle.setAttribute('aria-expanded', 'true');
+      picker.querySelector('[aria-pressed="true"]')?.focus({preventScroll: true});
+    });
+    document.addEventListener('pointerdown', event => {
+      if (!picker.hidden && !menu.contains(event.target)) close(false);
+    });
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && !picker.hidden) {
+        event.preventDefault();
+        close(true);
+      }
+    });
+    menu.addEventListener('focusout', event => {
+      if (!picker.hidden && event.relatedTarget && !menu.contains(event.relatedTarget)) close(false);
+    });
     picker.addEventListener('click', event => {
       const button = event.target.closest('[data-theme-choice]');
       if (!button || !picker.contains(button) || !valid(button.dataset.themeChoice)) return;
